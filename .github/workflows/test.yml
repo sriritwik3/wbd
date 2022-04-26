@@ -1,7 +1,6 @@
 name: My first Github action so please cooperate with any small mistakes.
 on: [push]
 jobs:
-	print-hello-world:
-		runs-on: ubuntu-latest
-		steps:
+	runs-on: ubuntu-latest
+	steps:
 		- run: echo "helloworld!!"
