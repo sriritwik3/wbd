@@ -8,4 +8,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16.14.2'
-      - run: node -v
+      - name: Install node modules
+        run: npm i
+      - name: Build the project
+        run: npm build
+      - name: setup finish
+        run: echo hurray!
