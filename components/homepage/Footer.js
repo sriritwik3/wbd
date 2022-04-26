@@ -1,20 +1,20 @@
 import React from "react";
-import styles from "./footer.module.css";
+import styles from "./Footer.module.css";
 
 function Footer() {
 return(
-    <div>         
+    <div>
         <main>
 
         <div className="row d-flex justify-content-center align-items-center rows">
             <div className="col-md-6" style={{flex: "0 0 auto",width: "100%"}}>
                 <div className={styles.card}>
-                    <div className="text-center" style={{textAlign: "center" }}> 
+                    <div className="text-center" style={{textAlign: "center" }}>
                     {/* eslint-disable-next-line*/}
                     <img src="https://i.imgur.com/Dh7U4bp.png" width="200"></img> <span className="d-block mt-3" style={{display: "block",marginTop: "1rem"}}>Subscribe to our newsletter in order not to miss new arrivals <br/> promotions and discounts of our store</span>
                         <div className={styles.mx_5}>
-                            <div className={styles.input_group}>  <input type="text" className={styles.form_control} placeholder="Enter email" aria-label="Recipient's username" aria-describedby="button-addon2" style={{width: "20rem",}}/>  <button className={styles.btn} type="button" id="button-addon2" style={{color: "#fff",backgroundColor: "#0ea0ff",borderColor: "#0ea0ff",}}>Subscribe</button> 
-                            </div>   
+                            <div className={styles.input_group}>  <input type="text" className={styles.form_control} placeholder="Enter email" aria-label="Recipient's username" aria-describedby="button-addon2" style={{width: "20rem",}}/>  <button className={styles.btn} type="button" id="button-addon2" style={{color: "#fff",backgroundColor: "#0ea0ff",borderColor: "#0ea0ff",}}>Subscribe</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -53,7 +53,7 @@ return(
                                 </li>
                             </ul>
                         </li>
-                        
+
                         <li className="nav__item"  style={{lineHeight: "2em"}}>
                             <h2 className={styles.nav__title}>Social</h2>
 
@@ -76,7 +76,7 @@ return(
                             <h2 className={styles.nav__title}>Stream</h2>
 
                             <ul className={styles.nav__ul__extra}>
-                                
+
 
                                 <li>
                                     <a href="#"style={{color: "#999"}}>CSE</a>
@@ -93,7 +93,7 @@ return(
                         </li>
 
 
-                        <li className="nav__item" style={{lineHeight: "2em"}}>  
+                        <li className="nav__item" style={{lineHeight: "2em"}}>
                             <h2 className={styles.nav__title}>Legal</h2>
 
                             <ul className="nav__ul">
@@ -116,7 +116,7 @@ return(
                         <p>&copy; 2019 Something. All rights reserved.</p>
                     </div>
                 </footer>
-            </div>    
+            </div>
         </main>
     </div>
     )
