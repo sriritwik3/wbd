@@ -1,3 +1,8 @@
-fnrfrfr
-xjncnc
-xejcne
+name : My first Github action, so please cooperate with any small mistakes.
+on : [push]
+jobs :
+	print-hello-world :
+		runs-on : ubuntu-latest
+		steps :
+			- run : echo "helloworld!!"
+			- run : echo "we entered step 2!"
