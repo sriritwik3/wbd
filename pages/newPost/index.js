@@ -1,83 +1,64 @@
-
-// const Post = styled.div``;
-
-import { auth, db } from "../../firebase";
 import chat from '../../public/chat.svg';
-import { useAuthState } from "react-firebase-hooks/auth";
-import { useCollection } from "react-firebase-hooks/firestore";
-import styles from "./index.module.css";
-import Head from "next/head";
-import Link from "next/link";
-import Script from "next/script";
-import Image from "next/image";
-import { useState, useEffect } from "react";
-import { doc, serverTimestamp, setDoc, query, where, collection, getDocs, getDoc, orderBy, docs } from "firebase/firestore";
-import TimeAgo from "timeago-react";
+import styles from './index.module.css';
+import Head from 'next/head';
+import Link from 'next/link';
+import Script from 'next/script';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import TimeAgo from 'timeago-react';
 import Tooltip from '@mui/material/Tooltip';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
-import {useRouter} from "next/router";
-import {signOut} from 'firebase/auth'
-import {useQuery} from "@apollo/client"
-import {GET_POSTS,USER_POSTS} from "../../graphql/client/queries"
-import pic from "../../public/profilepic.png"
-import {AuthContext} from "../../context/auth"
-import {useContext} from "react"
+import { useRouter } from 'next/router';
+import { useQuery } from '@apollo/client';
+import { GET_POSTS, USER_POSTS } from '../../graphql/client/queries';
+import pic from '../../public/profilepic.png';
+import { AuthContext } from '../../context/auth';
+import { useContext } from 'react';
 function Posts() {
+  // the useAuthState hook is used for maintaining the user status, whether he is logged in or not.
+  // it also returns a loading state which tells us that whether the user is logged in or not
+  // (i.e) as this hook returns a promise, the loading is set to true if there is no user status,
+  // and false once we get the user is logged in
+  // Note: that this hook is also decalred and used in other files,
+  //so the above expalnation holds true for those files too.
+  const { user, logOut } = useContext(AuthContext);
 
+  // this hook is used to populate option based on the user selection in the filter section
+  const [option, setOption] = useState(0);
 
-
-    // the useAuthState hook is used for maintaining the user status, whether he is logged in or not.
-    // it also returns a loading state which tells us that whether the user is logged in or not
-    // (i.e) as this hook returns a promise, the loading is set to true if there is no user status,
-    // and false once we get the user is logged in
-    // Note: that this hook is also decalred and used in other files,
-    //so the above expalnation holds true for those files too.
-    const {user,logOut} = useContext(AuthContext);
-
-    // this hook is used to populate option based on the user selection in the filter section
-  const [option,setOption] = useState(0);
-
-    //This [id].js is a dynamic page and the id gets populated when a id is passed as a
-    // prop to the page. We can get the id value from the useRouter hook defined in Nextjs docs.
-    // this is the useRouter hook
+  //This [id].js is a dynamic page and the id gets populated when a id is passed as a
+  // prop to the page. We can get the id value from the useRouter hook defined in Nextjs docs.
+  // this is the useRouter hook
   const router = useRouter();
-
-
 
   // the postRef is a reference to the posts collection in the firebase
   // the reference to the collection changes based on the filter selection.
-  const orderByOptions = ()=>{
-    if(option === 0){
+  const orderByOptions = () => {
+    if (option === 0) {
       // this is when no filter is selected
-      return {variables:{orderBy:null}};
-    }
-    else if(option === 1){
+      return { variables: { orderBy: null } };
+    } else if (option === 1) {
       // this is when the latest filter is selected
-      return {variables:{orderBy:{createdAt:"desc"}}};
-    }
-    else if(option === 2){
-       // this is when the teamsize(ascending) filter is selected
-      return {variables:{orderBy:{membercount:"asc"}}}
-    }
-    else if(option === 3){
+      return { variables: { orderBy: { createdAt: 'desc' } } };
+    } else if (option === 2) {
+      // this is when the teamsize(ascending) filter is selected
+      return { variables: { orderBy: { membercount: 'asc' } } };
+    } else if (option === 3) {
       // this is when the teamsize(descending) filter is selected
-      return {variables:{orderBy:{membercount:"desc"}}}
-    }
-    else if(option === 4){
+      return { variables: { orderBy: { membercount: 'desc' } } };
+    } else if (option === 4) {
       // this is when the duration(ascending) filter is selected
-      return {variables:{orderBy:{duration:"asc"}}}
-    }
-    else if(option === 5){
+      return { variables: { orderBy: { duration: 'asc' } } };
+    } else if (option === 5) {
       // this is when the duration(descending) filter is selected
-      return {variables:{orderBy:{duration:"desc"}}}
+      return { variables: { orderBy: { duration: 'desc' } } };
+    } else if (option === 6) {
+      // this is when the my posts button is clicked
+      return { variables: { filter: user?.user_id } };
     }
-    else if(option === 6){
-       // this is when the my posts button is clicked
-      return {variables:{filter:user?.user_id}};
-    }
-  }
+  };
 
   // useEffect(()=>{
 
@@ -91,31 +72,30 @@ function Posts() {
   //when clas = "0px" is set the sortby drop down is not in action
   // when clas ="250px" is set the sortby drop down is shown to the users
   // to select the filters from
-  const [clas, setClas] = useState("0px");
+  const [clas, setClas] = useState('0px');
 
   //and this is the function which is responsible for the dropdown effect to happen
   const toggleClass = () => {
-    setClas(clas === "0px" ? "250px" : "0px");
+    setClas(clas === '0px' ? '250px' : '0px');
   };
 
   // this setSearch, useState hook is used for searching posts based on the skill tags.
-  const [search,setSearch]=useState("")
-  const handleSearch=(e)=>{
-    setSearch(e.target.value)
-  }
+  const [search, setSearch] = useState('');
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+  };
 
   // this setAppliedFlag, a useState hook is used for changing the css styles
-  const [appliedFlag,setAppliedFlag]=useState({"display":"none"});
+  const [appliedFlag, setAppliedFlag] = useState({ display: 'none' });
 
-  useEffect(()=>{
-    if (user?.email){
+  useEffect(() => {
+    if (user?.email) {
       setAppliedFlag({});
     }
-  },[user])
+  }, [user]);
 
-    const {loading1, error, data} = useQuery(GET_POSTS,orderByOptions());
-    if(loading1) return <p>Loading...</p>
-
+  const { loading1, error, data } = useQuery(GET_POSTS, orderByOptions());
+  if (loading1) return <p>Loading...</p>;
 
   // const {loading2,err,data1} = useQuery(USER_POSTS,{variables:{email:user?.email}});
   // if(!loading2) console.log(data1);
@@ -140,7 +120,7 @@ function Posts() {
           crossOrigin="anonymous"
         />
       </Head>{' '}
-  <Script
+      <Script
         src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossOrigin="anonymous"
@@ -250,7 +230,7 @@ function Posts() {
                     <Link href="/newPost/createPost">
                       <a className="nav-link">newpost</a>
                     </Link>
-</li>
+                  </li>
                 </ul>
                 <Link href="/">
                   <a onClick={() => logOut()} className="blue-button">
@@ -333,7 +313,7 @@ function Posts() {
                     }}
                   >
                     <nav className={styles.nav_new}>
-  <span className={styles.span_new} onClick={toggleClass}>
+                      <span className={styles.span_new} onClick={toggleClass}>
                         sort by
                       </span>
 
@@ -464,7 +444,7 @@ function Posts() {
                               className={styles.user__image_new}
                             />
 
-                          <div className={styles.user__info_new}>
+                            <div className={styles.user__info_new}>
                               <h5> {post?.postedBy?.name}</h5>
                               <small>
                                 {' '}
@@ -478,7 +458,7 @@ function Posts() {
                           </div>
                         </div>
                         <a
-                          href={`https://wbd.vercel.app/newPost/${post?.id}`}
+                          href={`https://fsd-project.vercel.app/newPost/${post?.id}`}
                           style={{ textDecoration: 'none', color: '#1a4765' }}
                         >
                           <h5>{post?.title}</h5>{' '}
@@ -595,57 +575,11 @@ function Posts() {
                   ))}
               </div>
             </div>
-            <div className="col-lg-2">
-              <div
-                className={
-                  (styles.sidebar, styles.trending_section, styles.left_menu)
-                }
-              >
-                {user ? (
-                  <div className="row">
-                    <div className="col-lg-12">
-                      <Image src={chat} alt="teamup" width="500" height="500" />
-                      <div
-                        className="col-lg-12"
-                        style={{
-                          marginTop: '40px',
-                          textAlign: 'center',
-                        }}
-                      >
-                        <div
-                          onClick={() => {
-                            router.push('/chat/1');
-                          }}
-                          className={styles.button_slide}
-                        >
-                          CHAT WITH OTHERS{' '}
-                          <span>
-                            {' '}
-                            <i
-                              className="fab fa-whatsapp"
-                              style={{
-                                color: 'blue',
-                                margin_left: '6px',
-                                margin_right: '6px',
-                                fontSize: '20px',
-                              }}
-                            ></i>
-                          </span>{' '}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div />
-                )}
-              </div>
-            </div>
           </div>
         </div>
       </section>{' '}
     </div>
   );
-
 }
 
 export default Posts;

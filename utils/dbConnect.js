@@ -1,19 +1,18 @@
-import mongoose from "mongoose";
-
+import mongoose from 'mongoose';
 
 const connection = {};
 
-async function dbConnect(){
-    if(connection.isConnected){
+async function dbConnect() {
+    if (connection.isConnected) {
         return;
     }
-    
-    const db = await mongoose.connect(process.env.MONGODB_URI,{
-        useNewUrlParser:true
+
+    const db = await mongoose.connect(process.env.MONGODB_URI, {
+        useNewUrlParser: true,
     });
 
     connection.isConnected = db.connections[0].readyState;
-    console.log("Database is successfully connected");
+    console.log('Database is successfully connected');
 }
 
 export default dbConnect;

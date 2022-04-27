@@ -12,17 +12,22 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import {useRouter} from 'next/router'
+import { useRouter } from 'next/router';
 import { AuthContext } from '../context/auth';
-import {useContext,useState,useEffect} from "react"
-import {useMutation} from "@apollo/client"
-import {LOGIN_USER} from "../graphql/client/queries"
+import { useContext, useState, useEffect } from 'react';
+import { useMutation } from '@apollo/client';
+import { LOGIN_USER } from '../graphql/client/queries';
 import { Login } from '@mui/icons-material';
 import Alert from '@mui/material/Alert';
 
 function Copyright(props) {
   return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
       {'Copyright © '}
       <Link color="inherit" href="http://localhost:3000">
         ProSpaces
@@ -33,42 +38,36 @@ function Copyright(props) {
   );
 }
 
-
-
-
 const theme = createTheme();
-
 
 //this is Sign In function, which will be executed when the user clicks the signin button
 // and the signin method is implemented using Google auth provider, which is taken from a hook - useAuthState()
-function SignIn() { 
+function SignIn() {
   const router = useRouter();
 
-  const context=useContext(AuthContext);
+  const context = useContext(AuthContext);
 
-  const [err,setErr]= useState({
+  const [err, setErr] = useState({
     isError: false,
-    message:null,
-    code:null
+    message: null,
+    code: null,
   });
-  const [success,setSuccess] = useState(0);    //update success message
-  const [failure,setFailure] = useState(0);    //update failure message
+  const [success, setSuccess] = useState(0); //update success message
+  const [failure, setFailure] = useState(0); //update failure message
 
-  useEffect(()=>{
-    
-  },[failure])
+  useEffect(() => {}, [failure]);
 
-  const [LogIn, {data,error,loading}] =  useMutation(LOGIN_USER,{
-    update(_, {data: {login : userData}}){
-        console.log(userData);
-        context.logIn(userData);
+  const [LogIn, { data, error, loading }] = useMutation(LOGIN_USER, {
+    update(_, { data: { login: userData } }) {
+      console.log(userData);
+      context.logIn(userData);
     },
-    onError(e){
+    onError(e) {
       setErr({
         isError: true,
-        code:null
+        code: null,
       });
-    }
+    },
   });
 
   console.log(err);
@@ -77,18 +76,25 @@ function SignIn() {
     event.preventDefault();
     const email = event?.target?.email?.value;
     const password = event?.target?.password?.value;
-    if(!(email.includes('@'))){
-      setErr({isError: true, code:"INVALID_EMAIL_ADDRESS", message:"Please enter a valid email address"});
+    if (!email.includes('@')) {
+      setErr({
+        isError: true,
+        code: 'INVALID_EMAIL_ADDRESS',
+        message: 'Please enter a valid email address',
+      });
+      setFailure(1);
+      return;
+    } else if (password.length < 8) {
+      setErr({
+        isError: true,
+        code: 'PASSWORD_LESS_THAN_8_CHARACTERS',
+        message: 'Please enter a password more than 8 characters',
+      });
       setFailure(1);
       return;
     }
-    else if(password.length < 8){
-      setErr({isError: true, code:"PASSWORD_LESS_THAN_8_CHARACTERS", message:"Please enter a password more than 8 characters"});
-      setFailure(1);
-      return;
-    }
-    LogIn({variables:{email:email, password:password}});
-    router.push('/')
+    LogIn({ variables: { email: email, password: password } });
+    router.push('/');
   };
 
   return (
@@ -109,7 +115,12 @@ function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
             <TextField
               margin="normal"
               required
@@ -142,7 +153,7 @@ function SignIn() {
             >
               Sign In
             </Button>
-            
+
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
@@ -158,10 +169,18 @@ function SignIn() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
-        {
-          failure?(<Alert severity="error" onClose={() => {setFailure(0)}}>{err.message}</Alert>):(<></>)
-        }
-        
+        {failure ? (
+          <Alert
+            severity="error"
+            onClose={() => {
+              setFailure(0);
+            }}
+          >
+            {err.message}
+          </Alert>
+        ) : (
+          <></>
+        )}
       </Container>
     </ThemeProvider>
   );

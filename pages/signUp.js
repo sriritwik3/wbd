@@ -12,8 +12,6 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import {signInWithPopup} from 'firebase/auth'
-import {auth,db,provider} from '../firebase'
 import {useRouter} from 'next/router'
 import { AuthContext } from '../context/auth';
 import {useContext,useState} from "react"
@@ -38,7 +36,7 @@ function Copyright(props) {
 //this is Sign Up function, which will be executed when the user clicks the signUp button
 // and the signup method is implemented using Google auth provider, which is taken from a hook - useAuthState()
 function SignUp() {
-  
+
   const router = useRouter();
 
   const context=useContext(AuthContext);
@@ -103,7 +101,7 @@ function SignUp() {
           </Typography>
           <UserAvatar sx={{ m: 3 , height: '100px', width: '100px'}}/>
 
-         
+
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>

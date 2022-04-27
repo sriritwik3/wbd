@@ -1,89 +1,91 @@
-import { auth, db } from "../../firebase";
-import styled from "styled-components";
-import { useAuthState } from "react-firebase-hooks/auth";
-import worko from "../../public/worko.svg";
-import Image from "next/image";
-import { useState} from "react";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
-import {doc,serverTimestamp,setDoc,query,where,collection,getDocs,getDoc,orderBy,docs,addDoc} from "firebase/firestore";
-import styles from "./singlepost.module.css";
-import { useRouter } from "next/router";
-import Navbar from "../../components/navbar/Navbar";
+import worko from '../../public/worko.svg';
+import Image from 'next/image';
+import { useState } from 'react';
+import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import styles from './singlepost.module.css';
+import { useRouter } from 'next/router';
+import Navbar from '../../components/navbar/Navbar';
 import Alert from '@mui/material/Alert';
-import {useCollection} from "react-firebase-hooks/firestore";
-import Tooltip from '@mui/material/Tooltip'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import {client} from "../../graphql/client/clientSetup"
-import {GET_POST} from "../../graphql/client/queries"
+import { client } from '../../graphql/client/clientSetup';
+import { GET_POST } from '../../graphql/client/queries';
 import { AuthContext } from '../../context/auth';
-import {useContext} from "react"
+import { useContext } from 'react';
 
-
-function SinglePost({title,goal,description,duration,weeklyhrs,membercount,skills,userid}) {
- const {user} = useContext(AuthContext) ;                 //return the data of the person who is logged in and is currently in this page 
-  const router = useRouter();       //hook used to get the query in the route of this page.
-
-
-  
-
+function SinglePost({
+  title,
+  goal,
+  description,
+  duration,
+  weeklyhrs,
+  membercount,
+  skills,
+  userid,
+}) {
+  const { user } = useContext(AuthContext); //return the data of the person who is logged in and is currently in this page
+  const router = useRouter(); //hook used to get the query in the route of this page.
 
   const [mdl, setMdl] = useState(false);
-  const [alert,setAlert] = useState(false);
+  const [alert, setAlert] = useState(false);
   const [applyformdata, setApplyformdata] = useState({
-    ques1: "",
-    ques2: "",
-    ques3: "",
+    ques1: '',
+    ques2: '',
+    ques3: '',
   });
 
-  
-
-  const applyDataHandle = (e) => {                            //function to get data from the apply form
+  const applyDataHandle = (e) => {
+    //function to get data from the apply form
     let name = e.target.name;
     let value = e.target.value;
     setApplyformdata({ ...applyformdata, [name]: value });
     console.log(applyformdata);
   };
 
-
-
-  function handleApply(e) {                                //this function sends the data to firebase upon clicking submit in apply form
+  function handleApply(e) {
+    //this function sends the data to firebase upon clicking submit in apply form
     e.preventDefault();
-    const applyRef = collection(docRef, "AppliedBy");
-    addDoc(applyRef, {
-      ...applyformdata,
-      timestamp: serverTimestamp(),
-      name: user?.displayName,
-      photo: user?.photoURL,
-      userid: user?.email,
-    });
     setMdl(false);
   }
 
-
-  const modifyFunctionality = () => {         //this function checks if the user loggedin is the person who created the post. if(yes)shows the modify and see response buttons.
+  const modifyFunctionality = () => {
+    //this function checks if the user loggedin is the person who created the post. if(yes)shows the modify and see response buttons.
     if (user?.user_id === userid) {
       return (
-        <div style={{"textAlign":"center"}}>
+        <div style={{ textAlign: 'center' }}>
           <div>
-        <Button variant="contained"  onClick={() => router.push(`/newPost/modify/${router.query.id}`)} size="medium">Modify</Button>
+            <Button
+              variant="contained"
+              onClick={() => router.push(`/newPost/modify/${router.query.id}`)}
+              size="medium"
+            >
+              Modify
+            </Button>
           </div>
           <div>
-        <Button variant="contained" style={{"marginTop":"1rem"}} size="medium" onClick={()=>{setMdl(true)}}>See responses</Button>
+            <Button
+              variant="contained"
+              style={{ marginTop: '1rem' }}
+              size="medium"
+              onClick={() => {
+                setMdl(true);
+              }}
+            >
+              See responses
+            </Button>
           </div>
           <div>
-
-          <Modal
-                open={mdl}
-                onClose={() => {
-                  setMdl(false);
-                }}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description">
-                <Box sx={style}>
-                  {/* {
+            <Modal
+              open={mdl}
+              onClose={() => {
+                setMdl(false);
+              }}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={style}>
+                {/* {
                     responseRef?.docs?.map((response)=>{return (
                       <div key={response.data().userid}>
                         <div style={{display:"flex",flexDirection:"row",justifyContent:"space-between",margin:"0.5rem"}}>
@@ -97,40 +99,37 @@ function SinglePost({title,goal,description,duration,weeklyhrs,membercount,skill
                       </div>
                     )})
                   } */}
-                </Box>
-
-          </Modal>
+              </Box>
+            </Modal>
           </div>
         </div>
       );
     }
   };
 
-
-
   const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
     width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
     boxShadow: 24,
     p: 4,
     borderRadius: 2,
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
   };
 
   return (
-    <div style={{ backgroundColor: "aliceblue" }}>
+    <div style={{ backgroundColor: 'aliceblue' }}>
       <div>
         <Navbar />
         <hr className={styles.hr} />
         <div className={styles.bodydiv}>
           <div className={styles.innerdiv}>
-            <h1 id={styles.title}>{title}</h1>  
+            <h1 id={styles.title}>{title}</h1>
 
             <h2>Goal</h2>
             <div className={styles.smallestdiv}>{goal}</div>
@@ -138,17 +137,19 @@ function SinglePost({title,goal,description,duration,weeklyhrs,membercount,skill
             <div className={styles.smallestdiv}>{description}</div>
 
             <h2>Skills</h2>
-            <div id={styles.skilldiv}>    
-              {
-                skills.map((skill)=><div id={styles.insideSkilldiv} key={userid}>{skill}</div>)
-              }
+            <div id={styles.skilldiv}>
+              {skills.map((skill) => (
+                <div id={styles.insideSkilldiv} key={userid}>
+                  {skill}
+                </div>
+              ))}
             </div>
             <h2>
-              Duration of Project:{" "}
+              Duration of Project:{' '}
               <span className={styles.time}> {duration} weeks</span>
             </h2>
             <h2>
-              Weekly Hours:{" "}
+              Weekly Hours:{' '}
               <span className={styles.time}> {weeklyhrs} hours</span>
             </h2>
             <h2>
@@ -157,149 +158,154 @@ function SinglePost({title,goal,description,duration,weeklyhrs,membercount,skill
           </div>
           <div className={styles.rightInnerdiv}>
             <Image src={worko} alt="workup" width="400" height="400" />
-            <div id={styles.btndiv}>
-              {modifyFunctionality()}
-            </div>
-            {user?.user_id === userid?(
+            <div id={styles.btndiv}>{modifyFunctionality()}</div>
+            {user?.user_id === userid ? (
               <div></div>
-            ):(
+            ) : (
               <div>
-              <Button
-                variant="contained"
-                className={styles.new_button}
-                size="medium"
-                onClick={() => { 
-                  if(!user){
-                    setAlert(true);
-                    return;
-                  }
-                    setMdl(true)
+                <Button
+                  variant="contained"
+                  className={styles.new_button}
+                  size="medium"
+                  onClick={() => {
+                    if (!user) {
+                      setAlert(true);
+                      return;
+                    }
+                    setMdl(true);
                     console.log(mdl);
-                }}
-              >
-                Apply
-              </Button>
-              {alert?(
-                <Alert severity = "error" onClose={() => {setAlert(false)}}>
-                  You have to SignUp/SignIn to apply...
-                </Alert>)
-              :(
-                <div></div>
-              )}
-              <Modal
-                open={mdl}
-                onClose={() => {
-                  setMdl(false);
-                }}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-              >
-                <Box sx={style}>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      margin: "1rem 0rem 1rem 0rem",
+                  }}
+                >
+                  Apply
+                </Button>
+                {alert ? (
+                  <Alert
+                    severity="error"
+                    onClose={() => {
+                      setAlert(false);
                     }}
                   >
-                    <p>What are the skills you have in the given jobpost?</p>
-                    <TextField
-                      id="standard-basic"
-                      label="answer"
-                      name="ques1"
-                      variant="standard"
-                      type="string"
-                      onChange={applyDataHandle}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      margin: "1rem 0rem 1rem 0rem",
-                    }}
-                  >
-                    <p>Why do you think you are fit for the job?</p>
-                    <TextField
-                      id="standard-basic"
-                      label="answer"
-                      name="ques2"
-                      variant="standard"
-                      type="string"
-                      onChange={applyDataHandle}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      margin: "1rem 0rem 1rem 0rem",
-                    }}
-                  >
-                    <p>Describe about yourself in one sentence.</p>
-                    <TextField
-                      id="standard-basic"
-                      label="answer"
-                      name="ques3"
-                      variant="standard"
-                      type="string"
-                      onChange={applyDataHandle}
-                    />
-                  </div>
-                  <Button variant="contained" onClick={handleApply}>Submit</Button>
-                </Box>
-              </Modal>
-            </div>
+                    You have to SignUp/SignIn to apply...
+                  </Alert>
+                ) : (
+                  <div></div>
+                )}
+                <Modal
+                  open={mdl}
+                  onClose={() => {
+                    setMdl(false);
+                  }}
+                  aria-labelledby="modal-modal-title"
+                  aria-describedby="modal-modal-description"
+                >
+                  <Box sx={style}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        margin: '1rem 0rem 1rem 0rem',
+                      }}
+                    >
+                      <p>What are the skills you have in the given jobpost?</p>
+                      <TextField
+                        id="standard-basic"
+                        label="answer"
+                        name="ques1"
+                        variant="standard"
+                        type="string"
+                        onChange={applyDataHandle}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        margin: '1rem 0rem 1rem 0rem',
+                      }}
+                    >
+                      <p>Why do you think you are fit for the job?</p>
+                      <TextField
+                        id="standard-basic"
+                        label="answer"
+                        name="ques2"
+                        variant="standard"
+                        type="string"
+                        onChange={applyDataHandle}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        margin: '1rem 0rem 1rem 0rem',
+                      }}
+                    >
+                      <p>Describe about yourself in one sentence.</p>
+                      <TextField
+                        id="standard-basic"
+                        label="answer"
+                        name="ques3"
+                        variant="standard"
+                        type="string"
+                        onChange={applyDataHandle}
+                      />
+                    </div>
+                    <Button variant="contained" onClick={handleApply}>
+                      Submit
+                    </Button>
+                  </Box>
+                </Modal>
+              </div>
             )}
           </div>
         </div>
         <div className="sidebar-item comments">
-          <div className="sidebar-heading" style={{ textAlign: "center" }}>
+          <div className="sidebar-heading" style={{ textAlign: 'center' }}>
             <h1> DISCUSS </h1>
           </div>
           <div className="content">
             <ul>
               <li
                 style={{
-                  display: "block",
-                  marginBottom: "5px",
-                  paddingBottom: "5px",
-                  borderBottom: "1px solid #eee",
+                  display: 'block',
+                  marginBottom: '5px',
+                  paddingBottom: '5px',
+                  borderBottom: '1px solid #eee',
                 }}
               >
                 <div className="right-content">
                   <p>
-                    {" "}
+                    {' '}
                     <span
                       style={{
-                        fontSize: "20px",
+                        fontSize: '20px',
                       }}
                     >
                       <b>Shankar : </b>
-                    </span>{" "}
-                    comment body{" "}
+                    </span>{' '}
+                    comment body{' '}
                   </p>
                 </div>
               </li>
               <li
                 style={{
-                  display: "inline-block",
-                  marginBottom: "5px",
-                  paddingBottom: "5px",
-                  borderBottom: "1px solid #eee",
+                  display: 'inline-block',
+                  marginBottom: '5px',
+                  paddingBottom: '5px',
+                  borderBottom: '1px solid #eee',
                 }}
               >
                 <div className="right-content">
                   <p>
-                    {" "}
+                    {' '}
                     <span
                       style={{
-                        fontSize: "20px",
+                        fontSize: '20px',
                       }}
                     >
                       <b>Ritwik : </b>
-                    </span>{" "}
-                    comment body{" "}
+                    </span>{' '}
+                    comment body{' '}
                   </p>
                 </div>
               </li>
@@ -329,25 +335,25 @@ function SinglePost({title,goal,description,duration,weeklyhrs,membercount,skill
                     ></textarea>
                   </fieldset>
                 </div>
-                <div className="col-lg-12" style={{ paddingBottom: "2%" }}>
+                <div className="col-lg-12" style={{ paddingBottom: '2%' }}>
                   <fieldset>
                     <button
                       type="submit"
                       id="form-submit"
                       className="main-button"
                       style={{
-                        display: "inline-block",
-                        backgroundColor: "rgb(32, 179, 32)",
-                        color: "#fff",
-                        fontSize: "13px",
-                        fontWeight: "500",
-                        padding: "12px 20px",
-                        textTransform: "uppercase",
-                        transition: "all .3s",
-                        border: "none",
-                        outline: "none",
-                        cursor: "pointer",
-                        borderRadius: "8px",
+                        display: 'inline-block',
+                        backgroundColor: 'rgb(32, 179, 32)',
+                        color: '#fff',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        padding: '12px 20px',
+                        textTransform: 'uppercase',
+                        transition: 'all .3s',
+                        border: 'none',
+                        outline: 'none',
+                        cursor: 'pointer',
+                        borderRadius: '8px',
                       }}
                     >
                       Submit
@@ -361,20 +367,18 @@ function SinglePost({title,goal,description,duration,weeklyhrs,membercount,skill
       </div>
     </div>
   );
-  
 }
 
 export default SinglePost;
 
 export async function getServerSideProps(context) {
   const id = context.query.id;
-  const {data} = await client.query({
-    query:GET_POST,
-    variables:{
-      postId:id
-    }
+  const { data } = await client.query({
+    query: GET_POST,
+    variables: {
+      postId: id,
+    },
   });
-
 
   return {
     props: {
@@ -385,7 +389,7 @@ export async function getServerSideProps(context) {
       weeklyhrs: data.post.weeklyhrs,
       membercount: data.post.membercount,
       skills: data.post.skills,
-      userid:data.post.postedBy.id,
+      userid: data.post.postedBy.id,
     },
   };
 }
