@@ -8,9 +8,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16.14.2'
-      - name: Install node modules
+      - name: Install node modules # installing all the dependencies
         run: npm i
-      - name: Build the project
+      - name: Build the project  # build folder
         run: npm run build
       - name: setup finish
         run: echo hurray!
