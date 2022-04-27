@@ -458,7 +458,7 @@ function Posts() {
                           </div>
                         </div>
                         <a
-                          href={`https://fsd-project.vercel.app/newPost/${post?.id}`}
+                          href={`https://wbd.vercel.app/newPost/${post?.id}`}
                           style={{ textDecoration: 'none', color: '#1a4765' }}
                         >
                           <h5>{post?.title}</h5>{' '}
