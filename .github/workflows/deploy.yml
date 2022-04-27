@@ -11,7 +11,7 @@ jobs:
       - name: Install node modules
         run: npm i
       - name: Build the project
-        run: npm build
+        run: npm run build
       - name: setup finish
         run: echo hurray!
       - name: Deploy to vercel
