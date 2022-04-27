@@ -478,7 +478,7 @@ function Posts() {
                           </div>
                         </div>
                         <a
-                          href={`http://localhost:3000/newPost/${post?.id}`}
+                          href={`https://wbd.vercel.app/newPost/${post?.id}`}
                           style={{ textDecoration: 'none', color: '#1a4765' }}
                         >
                           <h5>{post?.title}</h5>{' '}
